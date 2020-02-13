@@ -1,26 +1,30 @@
-import React from 'react';
+import React, {Component} from 'react';
+import axios from 'axios'
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+
+  componentDidMount() {
+    axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: {
+        'Authorization': 'Bearer BQDeJxjscGmUFm_g44LWdTqV6V_M8J1QinO1xwDyBUDOMyMsTQsKZPPGqpESigvupYMD57AL51HUMmukewmLlSvNGSKkSFQ8lz81UhFwUErSh4kg36_SBHN7udFm_oFgraWapHJf1y9Iu7bFV1IT',
+      }
+    }).then(response => {
+      const images = response.data.item.album.images;
+      if (images && images.length > 0) {
+        const url = images[0].url;
+        const item = document.getElementById('coverArt');
+        item.setAttribute('src', url)
+      }
+    })
+  }
+
+  render() {
+    return (
+      <div className="App"></div>
+    )
+  }
 }
 
 export default App;

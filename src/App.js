@@ -1,30 +1,41 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios'
-import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
+const BASE_API_URL = 'https://fry1p43o50.execute-api.us-east-1.amazonaws.com/dev';
 
-  componentDidMount() {
-    axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-      headers: {
-        'Authorization': 'Bearer BQDeJxjscGmUFm_g44LWdTqV6V_M8J1QinO1xwDyBUDOMyMsTQsKZPPGqpESigvupYMD57AL51HUMmukewmLlSvNGSKkSFQ8lz81UhFwUErSh4kg36_SBHN7udFm_oFgraWapHJf1y9Iu7bFV1IT',
-      }
-    }).then(response => {
+function App() {
+  const [coverArt, setCoverArt] = useState(null);
+
+  async function callApi() {
+    try {
+      const response = await axios.get(`${BASE_API_URL}/currently-playing`);
+      console.log(response);
       const images = response.data.item.album.images;
       if (images && images.length > 0) {
         const url = images[0].url;
         const item = document.getElementById('coverArt');
-        item.setAttribute('src', url)
+        if (item) {
+          item.setAttribute('src', url);
+        }
+        setCoverArt(url);
+        console.log(url);
       }
-    })
+    } catch (err) {
+      console.log(err);
+    }
   }
 
-  render() {
-    return (
-      <div className="App"></div>
-    )
-  }
+  useEffect(() => {
+    callApi();
+  });
+
+  return (
+    <div className="App">
+      <h1>Cobyo AR</h1>
+      {coverArt && <img src={coverArt} />}
+    </div>
+  );
 }
 
 export default App;

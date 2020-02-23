@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios'
 import './App.css';
 
-const BASE_API_URL = 'https://fry1p43o50.execute-api.us-east-1.amazonaws.com/dev';
+const BASE_API_URL = 'https://24tc87kqlk.execute-api.us-east-1.amazonaws.com/dev';
 
 function App() {
   const [coverArt, setCoverArt] = useState(null);

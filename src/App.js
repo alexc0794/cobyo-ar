@@ -98,7 +98,7 @@ function App() {
         imageNode.setAttribute('src', imageUrl);
         imageNode.setAttribute('width', 1);
         imageNode.setAttribute('height', 1);
-        imageNode.setAttribute('position', `${x} 0 .05`);
+        imageNode.setAttribute('position', `${x} 0 .1`);
         imageNode.setAttribute('opacity', opacity);
         curvedImageWrapper.appendChild(imageNode);
         x += 1 + padding;

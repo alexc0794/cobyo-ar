@@ -55,14 +55,13 @@ function App() {
       coverArtTitle.setAttribute('text', `value: ${imageTitle}`);
     }
 
-    if (item.external_urls.spotify) {
-      const marker = document.getElementById('marker');
-      marker.addEventListener('mousedown', () => {
+    if (item.external_urls.spotify && coverArt) {
+      coverArt.addEventListener('mousedown', () => {
         pressTimeout = setTimeout(() => {
           window.location.href = item.external_urls.spotify;
         }, 2000);
       });
-      marker.addEventListener('mouseup', () => {
+      coverArt.addEventListener('mouseup', () => {
         clearTimeout(pressTimeout);
       });
     }
@@ -120,8 +119,17 @@ function App() {
     }
   }
 
+  function listenToMarker() {
+    const marker = document.getElementById('marker');
+    console.log(marker);
+    marker.addEventListener('markerFound', function() {
+			fetchCurrentlyPlayingWithFallback();
+		});
+  }
+
   useEffect(() => {
     fetchCurrentlyPlayingWithFallback();
+    listenToMarker();
   });
 
   return (

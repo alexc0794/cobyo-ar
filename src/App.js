@@ -3,17 +3,23 @@ import axios from 'axios'
 import MockData from './MockData';
 import './App.css';
 
-// const BASE_API_URL = 'http://localhost:8080'
-const BASE_API_URL = 'https://24tc87kqlk.execute-api.us-east-1.amazonaws.com/dev';
+// const BASE_API_URL = 'http://localhost:8080';
+const BASE_API_URL = 'https://f3mf794ytg.execute-api.us-east-1.amazonaws.com/dev';
 
 function App() {
 
   let pressTimeout = null;
 
   async function fetchCurrentlyPlaying() {
-    const response = await axios.get(`${BASE_API_URL}/currently-playing`, {
-      user_id: 'user1'
-    });
+    let response = null;
+    try {
+      response = await axios.get(`${BASE_API_URL}/currently-playing`, {
+        user_id: 'user1'
+      });
+    } catch(e) {
+      console.warn(e);
+    }
+
     if (response && response.data && response.data.error && response.data.error.status == 401) {
       const coverArtTitle = document.getElementById('coverArtTitle');
       coverArtTitle.setAttribute('text', 'value: Token expired');

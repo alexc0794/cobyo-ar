@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
-      name="description"
-      content="Web site created using create-react-app"
+      name="Cobyo AR"
+      content="Augmented reality web-app"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
@@ -39,6 +39,7 @@
   </head>
   <body style='margin : 0px; overflow: hidden;'>
   	<a-scene
+      id="scene"
       arjs
       embedded
       vr-mode-ui="enabled: false"
@@ -52,14 +53,19 @@
           emitevents
         >
           <a-entity
-            smooth
+            id="holder"
             geometry="primitive: plane; width: 1; height: 1"
             rotation="-90 0 0"
+            material="opacity: 0"
           >
-            <a-entity id="curvedImageWrapper"></a-entity>
-            <a-image id="coverArt"></a-image>
+            <a-entity id="images"></a-entity>
+            <a-image
+              id="primary-image"
+              animation="property: rotation; to: 0 -360 0; startEvents: rotate;"
+            >
+            </a-image>
             <a-text
-              id="coverArtTitle"
+              id="primary-text"
               value=""
               font="https://cdn.aframe.io/fonts/Aileron-Semibold.fnt"
               align="center"

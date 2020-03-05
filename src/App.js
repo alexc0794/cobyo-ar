@@ -73,9 +73,7 @@ function App() {
     let response = null;
     try {
       response = await axios.get(`${BASE_API_URL}/top/tracks`, {
-        params: {
-          user_id: 'user1'
-        },
+        params: { user_id: 'user1' },
       });
     } catch(e) {
       console.warn(e);
@@ -121,7 +119,6 @@ function App() {
 
   function listenToMarker() {
     const marker = document.getElementById('marker');
-    console.log(marker);
     marker.addEventListener('markerFound', function() {
 			fetchCurrentlyPlayingWithFallback();
 		});

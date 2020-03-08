@@ -5,7 +5,9 @@ async function fetchPlaylist() {
   try {
     tracks = await fetchTopTracks();
   } catch (e) {
-    return null;
+    return {
+      imageUrls: [],
+    };
   }
   return {
     imageUrls: tracks.map(track => track.album.images[0].url)

@@ -8,8 +8,10 @@ async function fetchTrack() {
   } catch {
     try {
       track = await fetchRecentlyPlayed();
-    } catch {
-      return null;
+    } catch (error) {
+      return {
+        imageTitle: error
+      };
     }
   }
   return {

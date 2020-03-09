@@ -1,11 +1,14 @@
 import axios from 'axios'
-import { BASE_API_URL } from '../../config';
+import { BASE_API_URL, USE_MOCK_DATA } from '../../config';
+import recentlyPlayedMock from './mock/recentlyPlayedMock';
 
 
 export function fetchRecentlyPlayed() {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await axios.get(`${BASE_API_URL}/recently-played`);
+      const response = USE_MOCK_DATA ? recentlyPlayedMock : await axios.get(
+        `${BASE_API_URL}/recently-played`
+      );
       if (response.data.error) {
         switch (response.data.error.status) {
           case 401:

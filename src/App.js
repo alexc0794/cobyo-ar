@@ -23,7 +23,8 @@ function App() {
     primaryText.setAttribute('visible', true)
   }
 
-  function handleClickRecentlyPlayedButton() {
+  function handleClickRecentlyPlayedButton(e) {
+    e.preventDefault();
     setMarkerType('RECENTLY_PLAYED');
     primaryImage.setAttribute('visible', false);
     primaryText.setAttribute('visible', false);
@@ -44,19 +45,22 @@ function App() {
       <div className="buttons">
         <ButtonGroup>
           <Button
-            variant={markerType==='CURRENTLY_PLAYING' ? "outline-primary" : "primary"}
+            active={markerType==='CURRENTLY_PLAYING'}
+            variant="outline-primary"
             onClick={handleClickCurrentlyPlaying}
           >
             Live
           </Button>
           <Button
-            variant={markerType==='RECENTLY_PLAYED' ? "outline-primary" : "primary"}
+            active={markerType==='RECENTLY_PLAYED'}
+            variant="outline-primary"
             onClick={handleClickRecentlyPlayedButton}
           >
             Recents
           </Button>
           <Button
-            variant={markerType==='CURRENT_FAVORITES' ? "outline-primary" : "primary"}
+            active={markerType==='CURRENT_FAVORITES'}
+            variant="outline-primary"
             onClick={handleClickCurrentFavorites}
           >
             Favorites

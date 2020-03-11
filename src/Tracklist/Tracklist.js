@@ -17,6 +17,7 @@ function Tracklist({
       while (imagesElement.firstChild) {
         imagesElement.removeChild(imagesElement.lastChild);
       }
+      secondaryTextElement.setAttribute('text', 'value:');
     };
   });
 
@@ -49,7 +50,7 @@ function Tracklist({
     const POSITION_Z = .2
 
     const { imageUrls, trackNames, artistNames } = await fetchTracklist();
-    if (!imageUrls.length) {
+    if (!imageUrls.length || !artistNames.length || !trackNames.length) {
       return;
     }
     const padding = .1;
@@ -71,6 +72,7 @@ function Tracklist({
       }
     });
 
+    secondaryTextElement.setAttribute('text', `value: ${recentlyPlayed ? 'Recently Played' : 'Current Favorites'}`);
     secondaryTextElement.setAttribute('position', '0 -1 0');
     let i = 0;
     interval = setInterval(() => {

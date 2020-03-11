@@ -3,19 +3,29 @@ import { fetchTopTracks } from './services/topTracksService';
 import { fetchRecentlyPlayed } from './services/recentlyPlayedService';
 
 
-function Tracklist() {
+function Tracklist({
+  recentlyPlayed
+}) {
+  const imagesElement = document.getElementById('images');
+  const secondaryTextElement = document.getElementById('secondary-text');
   let interval;
 
   useEffect(() => {
     loadTracklist()
     return () => {
       clearInterval(interval);
+      while (imagesElement.firstChild) {
+        imagesElement.removeChild(imagesElement.lastChild);
+      }
     };
   });
 
   async function fetchTracklist() {
     let tracks;
     try {
+      if (recentlyPlayed) {
+        throw new Error();
+      }
       tracks = await fetchTopTracks();
     } catch (e) {
       try {
@@ -36,8 +46,6 @@ function Tracklist() {
   }
 
   async function loadTracklist() {
-    const imagesElement = document.getElementById('images');
-    const secondaryTextElement = document.getElementById('secondary-text');
     const POSITION_Z = .2
 
     const { imageUrls, trackNames, artistNames } = await fetchTracklist();

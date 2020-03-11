@@ -51,7 +51,7 @@
         id="marker"
         type='pattern'
         preset='custom'
-        url='%PUBLIC_URL%/marker/v1/pattern-ar-alegschow.patt'
+        url='%PUBLIC_URL%/marker/v0/pattern-master.patt'
         emitevents
       >
         <a-entity
@@ -60,6 +60,7 @@
           rotation="-90 0 0"
           material="opacity: 0"
         >
+          <a-entity id="carousel"></a-entity>
           <a-entity id="images" visible="false"></a-entity>
           <a-image
             id="primary-image"

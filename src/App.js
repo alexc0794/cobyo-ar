@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Track from './Track/Track';
 import Tracklist from './Tracklist/Tracklist';
 import Analysis from './Analysis/Analysis';
+import Carousel from './Carousel/Carousel';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import './App.css';
@@ -65,7 +66,6 @@ function App() {
           >
             Favorites
           </Button>
-
         </ButtonGroup>
         {markerType === 'CURRENTLY_PLAYING' && (
           <Track />
@@ -74,7 +74,7 @@ function App() {
           <Tracklist recentlyPlayed />
         )}
         {markerType === 'CURRENT_FAVORITES' && (
-          <Tracklist />
+          <Carousel />
         )}
         {markerType === 'ANALYSIS' && (
           <Analysis />

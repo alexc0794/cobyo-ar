@@ -1,80 +1,51 @@
-import React, {useEffect} from 'react';
-import axios from 'axios'
-import { loadTrack } from './Track';
-import { BASE_API_URL } from './config';
+import React, { useState } from 'react';
+import Track from './Track/Track';
+import Tracklist from './Tracklist/Tracklist';
+import Button from 'react-bootstrap/Button';
 import './App.css';
 
 
 function App() {
-  useEffect(() => {
-    listenToMarker();
-  });
+  const [markerType, setMarkerType] = useState('TRACK');
 
-  function listenToMarker() {
-    const marker = document.getElementById('marker');
-    marker.addEventListener('markerFound', handleMarkerFound);
-    marker.addEventListener('markerLost', handleMarkerLost);
-  }
+  function handleClickTopSongsButton() {
+    const images = document.getElementById('images');
+    const primaryImage = document.getElementById('primary-image');
+    const primaryText = document.getElementById('primary-text');
+    const secondaryText = document.getElementById('secondary-text');
 
-  let startX = 0;
-  let distance = 0;
-  const SWIPE_DISTANCE_THRESHOLD = window.innerWidth - 100;
+    if (markerType === 'TRACKLIST') {
+      images.setAttribute('visible', false);
+      secondaryText.setAttribute('visible', false);
 
-  function handleTouchStart(e) {
-    const touch = e.changedTouches[0];
-    startX = parseInt(touch.clientX);
-    e.preventDefault();
-  }
+      primaryImage.setAttribute('visible', true);
+      primaryText.setAttribute('visible', true)
 
-  function handleTouchMove(e) {
-    const touch = e.changedTouches[0];
-    distance = parseInt(touch.clientX) - startX;
-    const primaryImageElement = document.getElementById('primary-image');
-    primaryImageElement.setAttribute('opacity', (SWIPE_DISTANCE_THRESHOLD - Math.abs(distance)) / SWIPE_DISTANCE_THRESHOLD);
-    e.preventDefault();
-  }
+      setMarkerType('TRACK');
+    } else {
+      primaryImage.setAttribute('visible', false);
+      primaryText.setAttribute('visible', false);
 
-  async function handleTouchEnd(e) {
-    if (distance < -1 * SWIPE_DISTANCE_THRESHOLD) { // Swipe right is negative
-      try {
-        await axios.get(`${BASE_API_URL}/next`);
-        const primaryImageElement = document.getElementById('primary-image');
-        primaryImageElement.setAttribute('animation', 'loop', true);
-        primaryImageElement.emit('rotate');
-        setTimeout(async () => {
-          await loadTrack();
-          primaryImageElement.setAttribute('rotation', {x: 0, y: 0, z: 0});
-          primaryImageElement.setAttribute('animation', 'loop', false);
-        }, 2500);
-      } catch(e) {
-        console.warn(e);
-      }
+      images.setAttribute('visible', true);
+      secondaryText.setAttribute('visible', true);
+
+      setMarkerType('TRACKLIST');
     }
-    const primaryImageElement = document.getElementById('primary-image');
-    primaryImageElement.setAttribute('opacity', 1);
-    startX = 0;
-    distance = 0;
-    e.preventDefault();
-  }
-
-  async function handleMarkerFound() {
-    loadTrack();
-    const scene = document.getElementById('scene');
-    scene.addEventListener('touchstart', handleTouchStart);
-    scene.addEventListener('touchmove', handleTouchMove);
-    scene.addEventListener('touchend', handleTouchEnd);
-  }
-
-  function handleMarkerLost() {
-    const scene = document.getElementById('scene');
-    scene.removeEventListener('touchstart', handleTouchStart);
-    scene.removeEventListener('touchmove', handleTouchMove);
-    scene.removeEventListener('touchend', handleTouchEnd);
   }
 
   return (
     <div className="App">
-      <h1>Cobyo AR</h1>
+      <div className="buttons">
+        <Button onClick={handleClickTopSongsButton}>
+          {markerType === 'TRACKLIST' ? 'See Currently Listening' : 'See Top Songs'}
+        </Button>
+        {markerType === 'TRACK' && (
+          <Track />
+        )}
+        {markerType === 'TRACKLIST' && (
+          <Tracklist />
+        )}
+      </div>
     </div>
   );
 }

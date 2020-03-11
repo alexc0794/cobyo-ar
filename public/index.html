@@ -15,6 +15,24 @@
     <!-- aframe.js and aframe-ar.js in public folder -->
     <script src="%PUBLIC_URL%/js/aframe.min.js"></script>
     <script src="%PUBLIC_URL%/js/aframe-ar.min.js"></script>
+    <script>
+      AFRAME.registerComponent('ar-title', {
+        schema: {
+          font: {type: 'string', default: 'https://cdn.aframe.io/fonts/Aileron-Semibold.fnt'},
+          align: {type: 'string', default: 'center'},
+          zOffset: {type: 'number', default: 2},
+          baseline: {type: 'string', default: 'top'},
+          whiteSpace: {type: 'string', default: 'pre'},
+          wrapCount: {type: 'number', default: 25},
+          position: {type: 'string', default: '0 0 0'}
+        },
+        init: function() {
+          Object.keys(this.data).forEach(key => {
+            this.el.setAttribute(key, this.data[key]);
+          });
+        }
+      })
+    </script>
     <style>
       #arjsDebugUIContainer {
         display: none!important;
@@ -29,46 +47,42 @@
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
     >
-		    <a-marker
-          id="marker"
-          type='pattern'
-          preset='custom'
-          url='%PUBLIC_URL%/marker/v1/pattern-ar-alegschow.patt'
-          emitevents
+	    <a-marker
+        id="marker"
+        type='pattern'
+        preset='custom'
+        url='%PUBLIC_URL%/marker/v1/pattern-ar-alegschow.patt'
+        emitevents
+      >
+        <a-entity
+          id="holder"
+          geometry="primitive: plane; width: 1; height: 1"
+          rotation="-90 0 0"
+          material="opacity: 0"
         >
-          <a-entity
-            id="holder"
-            geometry="primitive: plane; width: 1; height: 1"
-            rotation="-90 0 0"
-            material="opacity: 0"
+          <a-entity id="images" visible="false"></a-entity>
+          <a-image
+            id="primary-image"
+            animation="property: rotation; to: 0 -360 0; startEvents: rotate;"
           >
-            <a-entity id="images"></a-entity>
-            <a-image
-              id="primary-image"
-              animation="property: rotation; to: 0 -360 0; startEvents: rotate;"
-            >
-            </a-image>
-            <a-text
-              id="primary-text"
-              value=""
-              font="https://cdn.aframe.io/fonts/Aileron-Semibold.fnt"
-              align="center"
-              z-offset=.01
-              width=3
-              color="black"
-              position="0 -.55 0"
-              baseline="top"
-              white-space="pre"
-              wrap-count=25
-              animation="property: components.text.material.uniforms.color.value; type: color; to: red; dir: alternate; loop: true"
-            >
-            </a-text>
-          </a-entity>
-        </a-marker>
+          </a-image>
+          <a-text
+            id="primary-text"
+            ar-title="position: 0 -.6 0"
+            animation="property: components.text.material.uniforms.color.value; type: color; to: red; dir: alternate; loop: true"
+          ></a-text>
+          <a-text
+            id="secondary-text"
+            ar-title="position: 0 -.6 0"
+            visible=false
+            animation="property: components.text.material.uniforms.color.value; type: color; to: blue; dir: alternate; loop: true"
+          ></a-text>
+        </a-entity>
+      </a-marker>
       <a-entity camera>
         <a-entity cursor="fuse: false;"></a-entity>
       </a-entity>
   	</a-scene>
-    <div style="display: none" id="root"></div>
+    <div id="root"></div>
   </body>
 </html>

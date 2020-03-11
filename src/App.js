@@ -16,57 +16,61 @@ function App() {
   const secondaryText = document.getElementById('secondary-text');
 
   function handleClickCurrentlyPlaying() {
+    setMarkerType('CURRENTLY_PLAYING');
     images.setAttribute('visible', false);
     secondaryText.setAttribute('visible', false);
     primaryImage.setAttribute('visible', true);
     primaryText.setAttribute('visible', true)
-
-    setMarkerType('CURRENTLY_PLAYING');
   }
 
   function handleClickRecentlyPlayedButton() {
+    setMarkerType('RECENTLY_PLAYED');
     primaryImage.setAttribute('visible', false);
     primaryText.setAttribute('visible', false);
-
     images.setAttribute('visible', true);
     secondaryText.setAttribute('visible', true);
-
-    setMarkerType('RECENTLY_PLAYED');
   }
 
   function handleClickCurrentFavorites() {
+    setMarkerType('CURRENT_FAVORITES');
     primaryImage.setAttribute('visible', false);
     primaryText.setAttribute('visible', false);
-
     images.setAttribute('visible', true);
     secondaryText.setAttribute('visible', true);
-
-    setMarkerType('CURRENT_FAVORITES');
   }
 
   return (
     <div className="App">
       <div className="buttons">
         <ButtonGroup>
-          <Button onClick={handleClickCurrentlyPlaying}>
-            Currently Playing
+          <Button
+            variant={markerType==='CURRENTLY_PLAYING' ? "outline-primary" : "primary"}
+            onClick={handleClickCurrentlyPlaying}
+          >
+            Live
           </Button>
-          <Button onClick={handleClickRecentlyPlayedButton}>
-            Recently Played
+          <Button
+            variant={markerType==='RECENTLY_PLAYED' ? "outline-primary" : "primary"}
+            onClick={handleClickRecentlyPlayedButton}
+          >
+            Recents
           </Button>
-          <Button onClick={handleClickCurrentFavorites}>
-            Current Favorites
+          <Button
+            variant={markerType==='CURRENT_FAVORITES' ? "outline-primary" : "primary"}
+            onClick={handleClickCurrentFavorites}
+          >
+            Favorites
           </Button>
 
         </ButtonGroup>
         {markerType === 'CURRENTLY_PLAYING' && (
           <Track />
         )}
-        {markerType === 'CURRENT_FAVORITES' && (
-          <Tracklist />
-        )}
         {markerType === 'RECENTLY_PLAYED' && (
           <Tracklist recentlyPlayed />
+        )}
+        {markerType === 'CURRENT_FAVORITES' && (
+          <Tracklist />
         )}
         {markerType === 'ANALYSIS' && (
           <Analysis />

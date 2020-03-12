@@ -7,6 +7,9 @@ import { fetchRecentlyPlayed } from './services/recentlyPlayedService';
 function Track() {
   useEffect(() => {
     listenToMarker();
+    return () => {
+      stopListeningToMarker()
+    };
   });
 
   async function fetchTrack() {
@@ -53,6 +56,12 @@ function Track() {
     const marker = document.getElementById('marker');
     marker.addEventListener('markerFound', handleMarkerFound);
     marker.addEventListener('markerLost', handleMarkerLost);
+  }
+
+  function stopListeningToMarker() {
+    const marker = document.getElementById('marker');
+    marker.removeEventListener('markerFound', handleMarkerFound);
+    marker.removeEventListener('markerLost', handleMarkerLost);
   }
 
   let startX = 0;

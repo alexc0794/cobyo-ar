@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchTopTracks } from './services/topTracksService';
 
 const defaultProps = {
@@ -12,61 +12,83 @@ function Carousel({
 }) {
   const carouselElement = document.getElementById('carousel');
 
+  const [tracks, setTracks] = useState([]);
+
   useEffect(() => {
-    loadTracklist();
+    if (tracks.length) {
+      displayCarousel();
+      loadTouchListeners();
+    } else {
+      loadTracklist();
+    }
 
     return () => {
       while (carouselElement.firstChild) {
         carouselElement.removeChild(carouselElement.lastChild);
       }
+      removeTouchListeners();
     };
   });
 
   async function loadTracklist() {
     const tracks = await fetchTopTracks();
-    const numItems = tracks.length;
+    if (tracks.length) {
+      setTracks(tracks);
+    }
+  }
 
-    const delta = 2 * Math.PI / numItems;
-    let radian = 0;
+  function getCarouselItemId(track) {
+    return `carousel-item-${track.id}`;
+  }
+
+  function getRadianDelta() {
+    return 2 * Math.PI / tracks.length;
+  }
+
+  function displayCarousel() {
+    const delta = getRadianDelta();
     let x = 0;
     let z = radius;
 
-    tracks.forEach(track => {
-      const carouselItemElement = document.createElement('a-image');
-      carouselItemElement.setAttribute('id', `carousel-item-${track.name}`);
-      carouselItemElement.setAttribute('src', track.album.images[0].url);
-      carouselItemElement.setAttribute('width', 1);
-      carouselItemElement.setAttribute('height', 1);
-      carouselItemElement.setAttribute('side', 'front');
+    tracks.forEach((track, i) => {
+      const radian = i * delta;
+      let carouselItemElement = document.getElementById(getCarouselItemId(track));
+      if (!carouselItemElement) {
+        carouselItemElement = document.createElement('a-image');
+        carouselItemElement.setAttribute('id', getCarouselItemId(track));
+        carouselItemElement.setAttribute('src', track.album.images[0].url);
+        carouselItemElement.setAttribute('width', 1);
+        carouselItemElement.setAttribute('height', 1);
+      }
       x = _calculateX(radius, radian);
       z = _calculateZ(radius, radian);
       carouselItemElement.setAttribute('position', { x, y: 0, z });
       carouselItemElement.setAttribute('radian', radian);
       carouselItemElement.setAttribute('opacity', _calculateOpacity(radius, z));
+      setAnimation(carouselItemElement, i);
 
-      // Find next position the item would go to for animation purposes
-      const nextX = _calculateX(radius, radian + delta);
-      const nextZ = _calculateZ(radius, radian + delta);
-
-      carouselItemElement.setAttribute('animation__position', {
-        property: 'position',
-        to: {x: nextX, y: 0, z: nextZ},
-        dur: 2000,
-        startEvents: ['swiped']
-      });
-      carouselItemElement.setAttribute('animation__opacity', {
-        property: 'opacity',
-        to: _calculateOpacity(radius, nextZ),
-        dur: 2000,
-        startEvents: ['swiped']
-      });
       carouselElement.appendChild(carouselItemElement);
-      radian += delta;
     });
+  }
 
-    setInterval(() => {
-      loadTouchListeners();
-    }, 2000);
+  function setAnimation(carouselItemElement, i) {
+    const delta = getRadianDelta();
+    const radian = i * delta;
+    // Find next position the item would go to for animation purposes
+    const nextX = _calculateX(radius, radian + delta);
+    const nextZ = _calculateZ(radius, radian + delta);
+    carouselItemElement.setAttribute('animation__position', {
+      property: 'position',
+      to: {x: nextX, y: 0, z: nextZ},
+      dur: 1000,
+      startEvents: ['swiped']
+    });
+    carouselItemElement.setAttribute('animation__opacity', {
+      property: 'opacity',
+      to: _calculateOpacity(radius, nextZ),
+      dur: 1000,
+      startEvents: ['swiped']
+    });
   }
 
   function _calculateX(radius, radian) {
@@ -82,38 +104,51 @@ function Carousel({
   }
 
   function loadTouchListeners() {
+    // TODO: REMOVE
+    setTimeout(() => {
+      handleTouchStart();
+    }, 1000);
+
     const scene = document.getElementById('scene');
     scene.addEventListener('touchstart', handleTouchStart);
-    scene.addEventListener('touchmove', handleTouchMove);
-    scene.addEventListener('touchend', handleTouchEnd);
   }
 
-  let startX = 0;
-  let distance = 0;
+  function removeTouchListeners() {
+    const scene = document.getElementById('scene');
+    scene.removeEventListener('touchstart', handleTouchStart);
+  }
 
   function handleTouchStart(e) {
-    const touch = e.changedTouches[0];
-    startX = parseInt(touch.clientX);
-    e.preventDefault();
-  }
-
-  function handleTouchMove(e) {
-    const touch = e.changedTouches[0];
-    distance = parseInt(touch.clientX) - startX;
-    e.preventDefault();
-  }
-
-  function handleTouchEnd(e) {
-    if (distance < -1 * swipeDistanceThreshold) { // Swipe right is negative
-      const carouselItemElements = Array.from(carouselElement.children);
-      carouselItemElements.forEach(carouselItemElement => {
-        carouselItemElement.emit('swiped');
-      });
+    // const touch = e.changedTouches[0];
+    console.log(window.innerWidth);
+    const touchX = 800// parseInt(touch.clientX);
+    const padding = 50;
+    const swipedRight = touchX < window.innerWidth / 2 - padding;
+    const swipedLeft = touchX > window.innerWidth / 2 + padding;
+    if (!swipedRight && !swipedLeft) {
+      return;
     }
 
-    startX = 0;
-    distance = 0;
-    e.preventDefault();
+    tracks.forEach((track, i) => {
+      const carouselItemElement = document.getElementById(getCarouselItemId(track));
+      carouselItemElement.emit('swiped');
+    });
+
+    setTimeout(() => {
+      if (swipedLeft) {
+        setTracks([
+          ...tracks.slice(-1),
+          ...tracks.slice(0, -1),
+        ]);
+      }
+      if (swipedRight) {
+        setTracks([
+          ...tracks.slice(1),
+          tracks[0],
+        ]);
+      }
+    }, 1000);
+    // e.preventDefault();
   }
 
   return null;

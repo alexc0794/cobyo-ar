@@ -5,6 +5,7 @@ import Analysis from './Analysis/Analysis';
 import Carousel from './Carousel/Carousel';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Modal from 'react-bootstrap/Modal';
 import './App.css';
 
 
@@ -41,8 +42,45 @@ function App() {
     secondaryText.setAttribute('visible', true);
   }
 
+  const [showModal, setShowModal] = useState(!localStorage.getItem('ackWelcomeModalTimestamp'));
+
+  function handleClickDenyButton() {
+    window.location.href="https://alegschow.com";
+  }
+
+  function handleClickAcceptButton() {
+    setShowModal(false);
+    localStorage.setItem('ackWelcomeModalTimestamp', (new Date()).getTime());
+  }
+
   return (
     <div className="App">
+      <Modal show={showModal} onHide={handleClickAcceptButton}>
+        <Modal.Header closeButton>
+          <Modal.Title>Welcome to an Augmented Reality Experience</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ol>
+            <li>You will need to enable camera permissions.</li>
+            <li>If you have an <strong>iOS</strong> device, you will need to use <strong>Safari</strong>.</li>
+            <li>If you have an <strong>Android</strong> device, I don't actually know if this will work. Let me know.</li>
+          </ol>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={handleClickDenyButton}
+          >
+            No thanks
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleClickAcceptButton}
+          >
+            I understand
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <div className="buttons">
         <ButtonGroup>
           <Button

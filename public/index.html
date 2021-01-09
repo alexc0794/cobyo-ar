@@ -5,7 +5,7 @@
     <link rel="icon" href="%PUBLIC_URL%/images/sadlychow.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="Cobyo AR" content="Augmented reality web-app"/>
+    <meta name="Cobyo AR" content="Augmented reality web-app" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/images/sadlychow192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>Cobyo AR</title>
@@ -16,42 +16,45 @@
     <script src="%PUBLIC_URL%/js/aframe.min.js"></script>
     <script src="%PUBLIC_URL%/js/aframe-ar.min.js"></script>
     <script>
-      AFRAME.registerComponent('ar-title', {
+      AFRAME.registerComponent("ar-title", {
         schema: {
-          font: {type: 'string', default: 'https://cdn.aframe.io/fonts/Aileron-Semibold.fnt'},
-          align: {type: 'string', default: 'center'},
-          zOffset: {type: 'number', default: 2},
-          baseline: {type: 'string', default: 'top'},
-          whiteSpace: {type: 'string', default: 'pre'},
-          wrapCount: {type: 'number', default: 25},
-          position: {type: 'string', default: '0 0 0'}
+          font: {
+            type: "string",
+            default: "https://cdn.aframe.io/fonts/Aileron-Semibold.fnt",
+          },
+          align: { type: "string", default: "center" },
+          zOffset: { type: "number", default: 2 },
+          baseline: { type: "string", default: "top" },
+          whiteSpace: { type: "string", default: "pre" },
+          wrapCount: { type: "number", default: 25 },
+          position: { type: "string", default: "0 0 0" },
         },
-        init: function() {
-          Object.keys(this.data).forEach(key => {
+        init: function () {
+          Object.keys(this.data).forEach((key) => {
             this.el.setAttribute(key, this.data[key]);
           });
-        }
-      })
+        },
+      });
     </script>
     <style>
       #arjsDebugUIContainer {
-        display: none!important;
+        display: none !important;
       }
     </style>
   </head>
-  <body style='margin : 0px; overflow: hidden;'>
-  	<a-scene
+  <body style="margin: 0px; overflow: hidden;">
+    <a-scene
       id="scene"
       arjs
       embedded
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
     >
-	    <a-marker
+      <a-marker
         id="marker"
-        type='pattern'
-        preset='custom'
-        url='%PUBLIC_URL%/marker/v0/pattern-master.patt'
+        type="pattern"
+        preset="custom"
+        url="%PUBLIC_URL%/marker/v2/pattern-tshirt-front.patt"
         emitevents
       >
         <a-entity
@@ -75,19 +78,16 @@
           <a-text
             id="secondary-text"
             ar-title="position: 0 -.6 0"
-            visible=false
+            visible="false"
             animation="property: components.text.material.uniforms.color.value; type: color; to: blue; dir: alternate; loop: true"
           ></a-text>
-          <a-entity
-            id="analysis"
-            visible="false"
-          />
+          <a-entity id="analysis" visible="false" />
         </a-entity>
       </a-marker>
       <a-entity camera>
         <a-entity cursor="fuse: false;"></a-entity>
       </a-entity>
-  	</a-scene>
+    </a-scene>
     <div id="root"></div>
   </body>
 </html>

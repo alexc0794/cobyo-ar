@@ -3,3 +3,49 @@
   bottom: 10px;
   left: 20px;
 }
+
+.target {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+  height: 50vw;
+  width: 50vw;
+  /* border: 1px solid black; */
+}
+
+.corner-top-left,
+.corner-top-right,
+.corner-bottom-left,
+.corner-bottom-right {
+  border-width: 1px;
+  border-color: white;
+  height: 20px;
+  width: 20px;
+  position: absolute;
+}
+
+.corner-top-left {
+  border-style: solid none none solid;
+  top: 0;
+  left: 0;
+}
+
+.corner-top-right {
+  border-style: solid solid none none;
+  top: 0;
+  right: 0;
+}
+
+.corner-bottom-left {
+  border-style: none none solid solid;
+  bottom: 0;
+  left: 0;
+}
+
+.corner-bottom-right {
+  border-style: none solid solid none;
+  bottom: 0;
+  right: 0;
+}

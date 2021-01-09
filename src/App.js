@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Track from "./Track/Track";
 import Tracklist from "./Tracklist/Tracklist";
 import Analysis from "./Analysis/Analysis";
@@ -9,8 +9,36 @@ import Modal from "react-bootstrap/Modal";
 import "./App.css";
 
 function App() {
-  const [markerType, setMarkerType] = useState("CURRENTLY_PLAYING");
+  useEffect(() => {
+    listenToMarker();
+    return () => {
+      stopListeningToMarker();
+    };
+  });
 
+  function listenToMarker() {
+    const marker = document.getElementById("marker");
+    marker.addEventListener("markerFound", handleMarkerFound);
+    marker.addEventListener("markerLost", handleMarkerLost);
+  }
+
+  function stopListeningToMarker() {
+    const marker = document.getElementById("marker");
+    marker.removeEventListener("markerFound", handleMarkerFound);
+    marker.removeEventListener("markerLost", handleMarkerLost);
+  }
+
+  const [isMarkerFound, setIsMarkerFound] = useState(false);
+
+  function handleMarkerFound() {
+    setIsMarkerFound(true);
+  }
+
+  function handleMarkerLost() {
+    setIsMarkerFound(false);
+  }
+
+  const [markerType, setMarkerType] = useState("CURRENTLY_PLAYING");
   const images = document.getElementById("images");
   const primaryImage = document.getElementById("primary-image");
   const primaryText = document.getElementById("primary-text");
@@ -106,17 +134,21 @@ function App() {
             Favorites
           </Button>
         </ButtonGroup>
-        {markerType === "CURRENTLY_PLAYING" && <Track />}
+        {markerType === "CURRENTLY_PLAYING" && (
+          <Track isMarkerFound={isMarkerFound} />
+        )}
         {markerType === "RECENTLY_PLAYED" && <Tracklist recentlyPlayed />}
         {markerType === "CURRENT_FAVORITES" && <Carousel />}
         {markerType === "ANALYSIS" && <Analysis />}
       </div>
-      <div className="target">
-        <div className="corner-top-left" />
-        <div className="corner-top-right" />
-        <div className="corner-bottom-left" />
-        <div className="corner-bottom-right" />
-      </div>
+      {!isMarkerFound && (
+        <div className="target">
+          <div className="corner-top-left" />
+          <div className="corner-top-right" />
+          <div className="corner-bottom-left" />
+          <div className="corner-bottom-right" />
+        </div>
+      )}
     </div>
   );
 }

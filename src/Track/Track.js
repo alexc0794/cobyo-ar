@@ -1,16 +1,23 @@
-import { useEffect } from 'react';
-import axios from 'axios'
-import { BASE_API_URL } from '../config';
-import { fetchCurrentlyPlaying } from './services/currentlyPlayingService';
-import { fetchRecentlyPlayed } from './services/recentlyPlayedService';
+import { useEffect } from "react";
+import axios from "axios";
+import { BASE_API_URL } from "../config";
+import { fetchCurrentlyPlaying } from "./services/currentlyPlayingService";
+import { fetchRecentlyPlayed } from "./services/recentlyPlayedService";
 
-function Track() {
+function Track({ isMarkerFound }) {
   useEffect(() => {
-    listenToMarker();
-    return () => {
-      stopListeningToMarker()
-    };
-  });
+    const scene = document.getElementById("scene");
+    if (isMarkerFound) {
+      loadTrack();
+      scene.addEventListener("touchstart", handleTouchStart);
+      scene.addEventListener("touchmove", handleTouchMove);
+      scene.addEventListener("touchend", handleTouchEnd);
+    } else {
+      scene.removeEventListener("touchstart", handleTouchStart);
+      scene.removeEventListener("touchmove", handleTouchMove);
+      scene.removeEventListener("touchend", handleTouchEnd);
+    }
+  }, [isMarkerFound]);
 
   async function fetchTrack() {
     let track;
@@ -21,7 +28,7 @@ function Track() {
         track = await fetchRecentlyPlayed();
       } catch (error) {
         return {
-          imageTitle: error
+          imageTitle: error,
         };
       }
     }
@@ -35,33 +42,26 @@ function Track() {
   let pressTimeout;
 
   async function loadTrack() {
-    const primaryImageElement = document.getElementById('primary-image');
-    const primaryTextElement = document.getElementById('primary-text');
+    const primaryImageElement = document.getElementById("primary-image");
+    const primaryTextElement = document.getElementById("primary-text");
     const { imageTitle, imageUrl, trackUrl } = await fetchTrack();
     if (imageUrl) {
-      primaryImageElement.setAttribute('src', imageUrl);
+      primaryImageElement.setAttribute("src", imageUrl);
     }
     if (imageTitle) {
-      primaryTextElement.setAttribute('text', `value: ${imageTitle}`);
+      primaryTextElement.setAttribute("text", `value: ${imageTitle}`);
     }
     if (trackUrl) {
-      primaryImageElement.addEventListener('mousedown', () => {
-        pressTimeout = setTimeout(() => window.location.href = trackUrl, 2000);
+      primaryImageElement.addEventListener("mousedown", () => {
+        pressTimeout = setTimeout(
+          () => (window.location.href = trackUrl),
+          2000
+        );
       });
-      primaryImageElement.addEventListener('mouseup', () => clearTimeout(pressTimeout));
+      primaryImageElement.addEventListener("mouseup", () =>
+        clearTimeout(pressTimeout)
+      );
     }
-  }
-
-  function listenToMarker() {
-    const marker = document.getElementById('marker');
-    marker.addEventListener('markerFound', handleMarkerFound);
-    marker.addEventListener('markerLost', handleMarkerLost);
-  }
-
-  function stopListeningToMarker() {
-    const marker = document.getElementById('marker');
-    marker.removeEventListener('markerFound', handleMarkerFound);
-    marker.removeEventListener('markerLost', handleMarkerLost);
   }
 
   let startX = 0;
@@ -77,47 +77,36 @@ function Track() {
   function handleTouchMove(e) {
     const touch = e.changedTouches[0];
     distance = parseInt(touch.clientX) - startX;
-    const primaryImageElement = document.getElementById('primary-image');
-    primaryImageElement.setAttribute('opacity', (SWIPE_DISTANCE_THRESHOLD - Math.abs(distance)) / SWIPE_DISTANCE_THRESHOLD);
+    const primaryImageElement = document.getElementById("primary-image");
+    primaryImageElement.setAttribute(
+      "opacity",
+      (SWIPE_DISTANCE_THRESHOLD - Math.abs(distance)) / SWIPE_DISTANCE_THRESHOLD
+    );
     e.preventDefault();
   }
 
   async function handleTouchEnd(e) {
-    if (distance < -1 * SWIPE_DISTANCE_THRESHOLD) { // Swipe right is negative
+    if (distance < -1 * SWIPE_DISTANCE_THRESHOLD) {
+      // Swipe right is negative
       try {
         await axios.get(`${BASE_API_URL}/next`);
-        const primaryImageElement = document.getElementById('primary-image');
-        primaryImageElement.setAttribute('animation', 'loop', true);
-        primaryImageElement.emit('rotate');
+        const primaryImageElement = document.getElementById("primary-image");
+        primaryImageElement.setAttribute("animation", "loop", true);
+        primaryImageElement.emit("rotate");
         setTimeout(async () => {
           await loadTrack();
-          primaryImageElement.setAttribute('rotation', {x: 0, y: 0, z: 0});
-          primaryImageElement.setAttribute('animation', 'loop', false);
+          primaryImageElement.setAttribute("rotation", { x: 0, y: 0, z: 0 });
+          primaryImageElement.setAttribute("animation", "loop", false);
         }, 2500);
-      } catch(e) {
+      } catch (e) {
         console.warn(e);
       }
     }
-    const primaryImageElement = document.getElementById('primary-image');
-    primaryImageElement.setAttribute('opacity', 1);
+    const primaryImageElement = document.getElementById("primary-image");
+    primaryImageElement.setAttribute("opacity", 1);
     startX = 0;
     distance = 0;
     e.preventDefault();
-  }
-
-  function handleMarkerFound() {
-    loadTrack();
-    const scene = document.getElementById('scene');
-    scene.addEventListener('touchstart', handleTouchStart);
-    scene.addEventListener('touchmove', handleTouchMove);
-    scene.addEventListener('touchend', handleTouchEnd);
-  }
-
-  function handleMarkerLost() {
-    const scene = document.getElementById('scene');
-    scene.removeEventListener('touchstart', handleTouchStart);
-    scene.removeEventListener('touchmove', handleTouchMove);
-    scene.removeEventListener('touchend', handleTouchEnd);
   }
 
   return null;

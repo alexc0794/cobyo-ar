@@ -18,10 +18,12 @@
     <script>
       AFRAME.registerComponent("ar-title", {
         schema: {
-          font: {
-            type: "string",
-            default: "https://cdn.aframe.io/fonts/Aileron-Semibold.fnt",
-          },
+          // font: {
+          //   type: "string",
+          //   default: "https://cdn.aframe.io/fonts/Aileron-Semibold.fnt",
+          // },
+          height: { type: "number", default: 2.2 },
+          width: { type: "number", default: 2.2 },
           align: { type: "string", default: "center" },
           zOffset: { type: "number", default: 2 },
           baseline: { type: "string", default: "top" },

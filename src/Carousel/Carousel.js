@@ -1,16 +1,14 @@
-import { useEffect, useState } from 'react';
-import { fetchTopTracks } from './services/topTracksService';
+import { useEffect, useState } from "react";
+import { fetchTopTracks } from "./services/topTracksService";
 
 const defaultProps = {
-  radius: 1.75,
+  radius: 1,
   swipeDistanceThreshold: window.innerWidth - 100, // pixels
+  rotateDuration: 5000,
 };
 
-function Carousel({
-  radius,
-  swipeDistanceThreshold
-}) {
-  const carouselElement = document.getElementById('carousel');
+function Carousel({ radius, swipeDistanceThreshold, rotateDuration }) {
+  const carouselElement = document.getElementById("carousel");
 
   const [tracks, setTracks] = useState([]);
 
@@ -33,7 +31,7 @@ function Carousel({
   async function loadTracklist() {
     const tracks = await fetchTopTracks();
     if (tracks.length) {
-      setTracks(tracks);
+      setTracks(tracks.slice(0, 5));
     }
   }
 
@@ -42,7 +40,7 @@ function Carousel({
   }
 
   function getRadianDelta() {
-    return 2 * Math.PI / tracks.length;
+    return (2 * Math.PI) / tracks.length;
   }
 
   function displayCarousel() {
@@ -52,19 +50,21 @@ function Carousel({
 
     tracks.forEach((track, i) => {
       const radian = i * delta;
-      let carouselItemElement = document.getElementById(getCarouselItemId(track));
+      let carouselItemElement = document.getElementById(
+        getCarouselItemId(track)
+      );
       if (!carouselItemElement) {
-        carouselItemElement = document.createElement('a-image');
-        carouselItemElement.setAttribute('id', getCarouselItemId(track));
-        carouselItemElement.setAttribute('src', track.album.images[0].url);
-        carouselItemElement.setAttribute('width', 1);
-        carouselItemElement.setAttribute('height', 1);
+        carouselItemElement = document.createElement("a-image");
+        carouselItemElement.setAttribute("id", getCarouselItemId(track));
+        carouselItemElement.setAttribute("src", track.album.images[0].url);
+        carouselItemElement.setAttribute("width", 1);
+        carouselItemElement.setAttribute("height", 1);
       }
       x = _calculateX(radius, radian);
       z = _calculateZ(radius, radian);
-      carouselItemElement.setAttribute('position', { x, y: 0, z });
-      carouselItemElement.setAttribute('radian', radian);
-      carouselItemElement.setAttribute('opacity', _calculateOpacity(radius, z));
+      carouselItemElement.setAttribute("position", { x, y: 0, z });
+      carouselItemElement.setAttribute("radian", radian);
+      carouselItemElement.setAttribute("opacity", _calculateOpacity(radius, z));
       setAnimation(carouselItemElement, i);
 
       carouselElement.appendChild(carouselItemElement);
@@ -77,17 +77,17 @@ function Carousel({
     // Find next position the item would go to for animation purposes
     const nextX = _calculateX(radius, radian + delta);
     const nextZ = _calculateZ(radius, radian + delta);
-    carouselItemElement.setAttribute('animation__position', {
-      property: 'position',
-      to: {x: nextX, y: 0, z: nextZ},
-      dur: 1000,
-      startEvents: ['swiped']
+    carouselItemElement.setAttribute("animation__position", {
+      property: "position",
+      to: { x: nextX, y: 0, z: nextZ },
+      dur: rotateDuration,
+      startEvents: ["swiped"],
     });
-    carouselItemElement.setAttribute('animation__opacity', {
-      property: 'opacity',
+    carouselItemElement.setAttribute("animation__opacity", {
+      property: "opacity",
       to: _calculateOpacity(radius, nextZ),
-      dur: 1000,
-      startEvents: ['swiped']
+      dur: rotateDuration,
+      startEvents: ["swiped"],
     });
   }
 
@@ -109,19 +109,19 @@ function Carousel({
       handleTouchStart();
     }, 1000);
 
-    const scene = document.getElementById('scene');
-    scene.addEventListener('touchstart', handleTouchStart);
+    const scene = document.getElementById("scene");
+    scene.addEventListener("touchstart", handleTouchStart);
   }
 
   function removeTouchListeners() {
-    const scene = document.getElementById('scene');
-    scene.removeEventListener('touchstart', handleTouchStart);
+    const scene = document.getElementById("scene");
+    scene.removeEventListener("touchstart", handleTouchStart);
   }
 
   function handleTouchStart(e) {
     // const touch = e.changedTouches[0];
-    console.log(window.innerWidth);
-    const touchX = 800// parseInt(touch.clientX);
+    // console.log(window.innerWidth);
+    const touchX = 800; // parseInt(touch.clientX);
     const padding = 50;
     const swipedRight = touchX < window.innerWidth / 2 - padding;
     const swipedLeft = touchX > window.innerWidth / 2 + padding;
@@ -130,24 +130,20 @@ function Carousel({
     }
 
     tracks.forEach((track, i) => {
-      const carouselItemElement = document.getElementById(getCarouselItemId(track));
-      carouselItemElement.emit('swiped');
+      const carouselItemElement = document.getElementById(
+        getCarouselItemId(track)
+      );
+      carouselItemElement.emit("swiped");
     });
 
     setTimeout(() => {
       if (swipedLeft) {
-        setTracks([
-          ...tracks.slice(-1),
-          ...tracks.slice(0, -1),
-        ]);
+        setTracks([...tracks.slice(-1), ...tracks.slice(0, -1)]);
       }
       if (swipedRight) {
-        setTracks([
-          ...tracks.slice(1),
-          tracks[0],
-        ]);
+        setTracks([...tracks.slice(1), tracks[0]]);
       }
-    }, 1000);
+    }, rotateDuration);
     // e.preventDefault();
   }
 
